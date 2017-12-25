@@ -1,0 +1,4 @@
+package: github.com/yakumioto/mgen
+import:
+- package: gopkg.in/urfave/cli.v2
+- package: gopkg.in/yaml.v2

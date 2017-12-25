@@ -2,6 +2,7 @@ package mgen
 
 type ModelGenerator struct {
 	ConfigName  string  `yaml:"-"`
+	FileName    string  `yaml:"-"`
 	PackageName string  `yaml:"packageName,omitempty"`
 	Models      []Model `yaml:"models,omitempty"`
 	Raw         string  `yaml:"raw,omitempty"`

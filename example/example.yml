@@ -1,5 +1,8 @@
+#
+# mgen interface -p example && mgen mgo -c ./example.yml -output
+#
 ---
-packageName: mgen
+packageName: example
 models:
   - name: Address
     fields:

@@ -12,19 +12,26 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func InterfaceAction(_ *cli.Context) error {
+//go:generate go-bindata -o ./template.go -pkg mgen ./template
+func InterfaceAction(context *cli.Context) error {
+	packageName := context.String("package")
+
 	t, err := template.New("interface").Parse(string(MustAsset("template/interface.tmpl")))
 	if err != nil {
 		log.Fatalf("[ERROR] parse template files error: %s\n", err)
 	}
 
-	fp, err := os.Create("model.mg.go")
+	filename := "model.mg.go"
+	fp, err := os.Create(filename)
 	if err != nil {
 		log.Fatalf("[ERROR] create model.go error: %s\n", err)
 	}
 	defer fp.Close()
 
-	if err := t.Execute(fp, nil); err != nil {
+	mg := new(ModelGenerator)
+	mg.PackageName = packageName
+	mg.FileName = filename
+	if err := t.Execute(fp, mg); err != nil {
 		log.Fatalf("[ERROR] execute template error: %s\n", err)
 	}
 
@@ -46,7 +53,7 @@ func MgoAction(context *cli.Context) error {
 		log.Fatalf("[ERROR] unmarshal yaml error: %s\n", err)
 	}
 
-	t, err := template.New("interface").Funcs(template.FuncMap{
+	t, err := template.New("mgo").Funcs(template.FuncMap{
 		"ToLower":     strings.ToLower,
 		"SnakeString": SnakeString,
 	}).Parse(string(MustAsset("template/mgo.tmpl")))
@@ -55,7 +62,9 @@ func MgoAction(context *cli.Context) error {
 	}
 
 	if output {
+
 		filename := strings.Replace(configPath, path.Ext(configPath), ".mg.go", 1)
+		mg.FileName = filename
 		fp, err := os.Create(filename)
 		if err != nil {
 			log.Fatalf("[ERROR] create %s error: %s\n", filename, err)

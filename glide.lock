@@ -1,0 +1,8 @@
+hash: ddd2472ad547d3f9ccc7a02b53af48a4506a63ab2b34b88d594d78edddbcaece
+updated: 2017-12-25T14:25:15.491813+08:00
+imports:
+- name: gopkg.in/urfave/cli.v2
+  version: b2bf3c5abeb90da407891aecd1df2c5a1f6170c1
+- name: gopkg.in/yaml.v2
+  version: 287cf08546ab5e7e37d55a84f7ed3fd1db036de5
+testImports: []

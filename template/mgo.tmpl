@@ -5,6 +5,7 @@
 
 package {{.PackageName}}
 
+//go:generate goimports -w {{.FileName}}
 var (
     db *DB
 )
@@ -149,7 +150,7 @@ func Find{{$Name}}ByQuery(query interface{}) (*{{$Name}}, error) {
     s, c := GetSessionAndCollection(Collection{{$Model.Name}})
     defer s.Close()
 
-    {{$name}} := new({{$Name}}
+    {{$name}} := new({{$Name}})
 
     return {{$name}}, c.Find(query).One({{$name}})
 }
