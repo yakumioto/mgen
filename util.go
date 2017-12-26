@@ -2,29 +2,28 @@ package mgen
 
 import "strings"
 
-func SnakeString(s string) string {
-	data := make([]byte, 0, len(s)*2)
-	j := false
-	num := len(s)
-	if num == 2 {
-		if s == "ID" {
-			return "id"
-		}
-	}
-	for i := 0; i < num; i++ {
-		d := s[i]
-		if i > 0 && d >= 'A' && d <= 'Z' && j {
-			if s[i] == 'I' && s[i+1] == 'D' {
-				data = append(data, '_', s[i], s[i+1])
-				i++
-				continue
+func SnakeString(str string) string {
+	data := make([]byte, 0, len(str)*2)
+	noIndex := false
+	length := len(str)
+
+	for i := 0; i < length; i++ {
+		char := str[i]
+
+		if i > 0 && char >= 'A' && char <= 'Z' && noIndex {
+			if i < length-1 {
+				lastChar := str[i+1]
+				if lastChar >= 'a' && lastChar <= 'z' {
+					data = append(data, '_')
+				}
 			}
-			data = append(data, '_')
 		}
-		if d != '_' {
-			j = true
+
+		if char != '_' {
+			noIndex = true
 		}
-		data = append(data, d)
+		data = append(data, char)
 	}
+
 	return strings.ToLower(string(data[:]))
 }
