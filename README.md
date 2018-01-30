@@ -10,10 +10,14 @@ go get -u github.com/yakumioto/mgen
 
 ## 使用
 
-注: 本程序并不会自动添加所引入的包, 需使用 `goimports` 工具来自动添加包. 
-可直接执行 go generate -x 来添加包.
-
 安装: `go get golang.org/x/tools/cmd/goimports`
+
+注: **本程序并不会自动添加所引入的包, 需使用 `goimports` 工具来自动添加包. **
+
+生成的文件中包含了 `//go:generate goimports -w` 所以执行 `go generate -x` 来添加包.
+
+
+## mgen interface
 
 ```
 NAME:
@@ -37,7 +41,14 @@ GLOBAL OPTIONS:
 
 ### interface command
 
-生成一个 Database 的 interface, 和一个连接数据库的方法.
+```bash
+mgen interface
+```
+
+会在当前目录下生成一个 `model.mg.go` 的文件. 内容如下. 
+
+主要生成一个 Connect 的方法, 可以用来连接同一个 `Host` 下的多个数据库.
+生成的代码就在下方
 
 ```go
 package example
@@ -69,7 +80,9 @@ func Connect(host string, dbs ...Database) {
 }
 ```
 
-### mgo command
+### mgen mgo
+
+编写 配置文件, 然后使用命令生成. 可以参照 [example](/example)
 
 ```
 NAME:
@@ -86,6 +99,6 @@ OPTIONS:
 
 根据所传入的配置文件生成对应的 CRUD package.
 
-example: `mgen mgo -c xxx.yml -output`
+example: `mgen mgo -c xxx.yaml -output`
 
 会在执行命令的文件夹下生成一个 `xxx.mg.go` 的 CRUD 文件.
