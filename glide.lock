@@ -1,8 +1,15 @@
 hash: ddd2472ad547d3f9ccc7a02b53af48a4506a63ab2b34b88d594d78edddbcaece
-updated: 2017-12-25T14:25:15.491813+08:00
+updated: 2018-01-31T14:47:04.923352+08:00
 imports:
+- name: gopkg.in/mgo.v2
+  version: 3f83fa5005286a7fe593b055f0d7771a7dce4655
+  subpackages:
+  - bson
+  - internal/json
+  - internal/sasl
+  - internal/scram
 - name: gopkg.in/urfave/cli.v2
-  version: b2bf3c5abeb90da407891aecd1df2c5a1f6170c1
+  version: d3ae77c26ac8db90639677e4831a728d33c36111
 - name: gopkg.in/yaml.v2
-  version: 287cf08546ab5e7e37d55a84f7ed3fd1db036de5
+  version: d670f9405373e636a5a2765eea47fac0c9bc91a4
 testImports: []
