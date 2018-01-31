@@ -77,6 +77,7 @@ models:
 ```
 
 执行后生成的Go文件: [base.mg.go](/example/base/base.mg.go)
+
 如果指定了 `collectionName` 就会生成这个对应的 `CRUD` 方法
 
 - NewUser() *User
@@ -115,9 +116,11 @@ models:
 执行后生成的Go文件: [advanced.mgo.go](/example/advanced/advanced.mg.go)
 
 `unique` 用来指定唯一
+
 `valid` 用法实在太多了 使用的是 <https://github.com/asaskevich/govalidator>
 
 ## 感谢
 
 The MongoDB driver for Go <https://github.com/globalsign/mgo>
+
 Package of validators and sanitizers for strings, numerics, slices and structs <https://github.com/asaskevich/govalidator>
