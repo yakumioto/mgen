@@ -1,0 +1,17 @@
+---
+packageName: base
+models:
+  - name: User
+    collectionName: users
+    fields:
+      - name: UserName
+        type: string
+        unique: yes
+        valid: required~first name is blank
+      - name: Email
+        type: string
+        unique: yes
+        valid: required,email
+      - name: Password
+        type: string
+        valid: required

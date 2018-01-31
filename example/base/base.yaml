@@ -1,0 +1,12 @@
+---
+packageName: base
+models:
+  - name: User
+    collectionName: users
+    fields:
+      - name: UserName
+        type: string
+      - name: Email
+        type: string
+      - name: Password
+        type: string

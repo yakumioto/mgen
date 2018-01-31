@@ -82,10 +82,10 @@ func Check{{$Name}}States(status string) bool {
 }  {{end}}
 
 type {{$Name}} struct {
-    ID bson.ObjectId `bson:"_id,omitempty" json:"_id"`{{range $Model.Fields}}
-    {{.Name}} {{.Type}} `bson:"{{.Name|SnakeString}},omitempty" json:"{{.Name|SnakeString}}"{{if .Valid}} valid:"{{.Valid}}"{{end}}`{{end}}
-    CreatedAt time.Time `bson:"created_at,omitempty" json:"created_at"`
-    UpdatedAt time.Time `bson:"updated_at,omitempty" json:"updated_at"`
+    ID bson.ObjectId `bson:"_id" json:"_id"`{{range $Model.Fields}}
+    {{.Name}} {{.Type}} `bson:"{{.Name|SnakeString}}" json:"{{.Name|SnakeString}},omitempty"{{if .Valid}} valid:"{{.Valid}}"{{end}}`{{end}}
+    CreatedAt int64 `bson:"created_at" json:"created_at"`
+    UpdatedAt int64 `bson:"updated_at" json:"updated_at"`
 }
 
 func New{{$Name}}() *{{$Name}}{
@@ -106,7 +106,7 @@ func ({{$name}} *{{$Name}}) Insert() error {
     }{{end}}{{end}}
 
     {{$name}}.ID = bson.NewObjectId()
-    {{$name}}.CreatedAt = time.Now().UTC()
+    {{$name}}.CreatedAt = time.Now().UTC().Unix()
 
     return c.Insert({{$name}})
 }
@@ -115,20 +115,31 @@ func Update{{$Name}}ByID(id string, {{$name}} *{{$Name}}) error {
     s, c := GetSessionAndCollection(Collection{{$Model.Name}})
     defer s.Close()
 
-    {{$name}}.UpdatedAt = time.Now().UTC()
+    {{$name}}.UpdatedAt = time.Now().UTC().Unix()
 
     return c.UpdateId(bson.ObjectIdHex(id), bson.M{
         "$set": {{$name}},
     })
 }
 
-func Update{{$Name}}BySelector(selector interface{}, {{$name}} *{{$Name}}) error {
+func Update{{$Name}}(selector interface{}, {{$name}} *{{$Name}}) error {
     s, c := GetSessionAndCollection(Collection{{$Model.Name}})
     defer s.Close()
 
-    {{$name}}.UpdatedAt = time.Now().UTC()
+    {{$name}}.UpdatedAt = time.Now().UTC().Unix()
 
     return c.Update(selector, bson.M{
+        "$set": {{$name}},
+    })
+}
+
+func Update{{$Name}}All(selector interface{}, {{$name}} *{{$Name}}) (*mgo.ChangeInfo, error) {
+    s, c := GetSessionAndCollection(Collection{{$Model.Name}})
+    defer s.Close()
+
+    {{$name}}.UpdatedAt = time.Now().UTC().Unix()
+
+    return c.UpdateAll(selector, bson.M{
         "$set": {{$name}},
     })
 }
