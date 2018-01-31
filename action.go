@@ -40,7 +40,6 @@ func InterfaceAction(context *cli.Context) error {
 
 func MgoAction(context *cli.Context) error {
 	configPath := context.String("config-file")
-	output := context.Bool("output")
 
 	bytes, err := ioutil.ReadFile(configPath)
 	if err != nil {
@@ -61,24 +60,15 @@ func MgoAction(context *cli.Context) error {
 		log.Fatalf("[ERROR] parse template files error: %s\n", err)
 	}
 
-	if output {
-
-		filename := strings.Replace(configPath, path.Ext(configPath), ".mg.go", 1)
-		mg.FileName = filename
-		fp, err := os.Create(filename)
-		if err != nil {
-			log.Fatalf("[ERROR] create %s error: %s\n", filename, err)
-		}
-		defer fp.Close()
-
-		if err := t.Execute(fp, mg); err != nil {
-			log.Fatalf("[ERROR] execute template error: %s\n", err)
-		}
-
-		return nil
+	filename := strings.Replace(configPath, path.Ext(configPath), ".mg.go", 1)
+	mg.FileName = filename
+	fp, err := os.Create(filename)
+	if err != nil {
+		log.Fatalf("[ERROR] create %s error: %s\n", filename, err)
 	}
+	defer fp.Close()
 
-	if err := t.Execute(os.Stdout, mg); err != nil {
+	if err := t.Execute(fp, mg); err != nil {
 		log.Fatalf("[ERROR] execute template error: %s\n", err)
 	}
 

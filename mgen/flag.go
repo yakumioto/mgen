@@ -5,9 +5,9 @@ import "gopkg.in/urfave/cli.v2"
 func defaultInterfaceFlag() []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
-			Name: "package",
+			Name:    "package",
 			Aliases: []string{"p"},
-			Usage: "set interface file package name",
+			Usage:   "set interface file package name",
 		},
 	}
 }
@@ -18,11 +18,6 @@ func defaultModelFlag() []cli.Flag {
 			Name:    "config-file",
 			Aliases: []string{"c"},
 			Usage:   "set the config file path",
-		},
-		&cli.BoolFlag{
-			Name:    "output",
-			Aliases: []string{"o"},
-			Usage:   "set the output flag",
 		},
 	}
 }
