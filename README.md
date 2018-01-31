@@ -47,15 +47,14 @@ USAGE:
 
 OPTIONS:
    --config-file value, -c value  set the config file path
-   --output, -o                   set the output flag (default: false)
    --help, -h                     show help (default: false)
 ```
 
 根据所传入的配置文件生成对应的 CRUD package.
 
-example: `mgen mgo -c xxx.yaml -output`
+example: `mgen mgo -c xxx.yaml`
 
-会在执行命令的文件夹下生成一个 `xxx.mg.go` 的 CRUD 文件.
+会在执行命令会在当前文件夹下生成一个 `xxx.mg.go` 的文件.
 
 ### 配置文件编写
 
