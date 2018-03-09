@@ -84,8 +84,8 @@ func Check{{$Name}}States(status string) bool {
 type {{$Name}} struct {
     ID bson.ObjectId `bson:"_id" json:"_id"`{{range $Model.Fields}}
     {{.Name}} {{.Type}} `bson:"{{.Name|SnakeString}}" json:"{{.Name|SnakeString}},omitempty"{{if .Valid}} valid:"{{.Valid}}"{{end}}`{{end}}
-    CreatedAt int64 `bson:"created_at" json:"created_at"`
-    UpdatedAt int64 `bson:"updated_at" json:"updated_at"`
+    CreatedAt time.Time `bson:"created_at" json:"created_at"`
+    UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 }
 
 func New{{$Name}}() *{{$Name}}{
@@ -106,27 +106,36 @@ func ({{$name}} *{{$Name}}) Insert() error {
     }{{end}}{{end}}
 
     {{$name}}.ID = bson.NewObjectId()
-    {{$name}}.CreatedAt = time.Now().UTC().Unix()
+    {{$name}}.CreatedAt = time.Now().UTC()
 
     return c.Insert({{$name}})
 }
 
-func Update{{$Name}}ByID(id string, {{$name}} *{{$Name}}) error {
+func Update{{$Name}}ByID(id interface{}, {{$name}} *{{$Name}}) error {
     s, c := GetSessionAndCollection(Collection{{$Model.Name}})
     defer s.Close()
 
-    {{$name}}.UpdatedAt = time.Now().UTC().Unix()
+    {{$name}}.UpdatedAt = time.Now().UTC()
 
-    return c.UpdateId(bson.ObjectIdHex(id), bson.M{
-        "$set": {{$name}},
-    })
+    switch id := id.(type) {
+    case bson.ObjectId:
+        return c.UpdateId(id, bson.M{
+            "$set": {{$name}},
+        })
+    case string:
+        return c.UpdateId(bson.ObjectIdHex(id), bson.M{
+            "$set": {{$name}},
+        })
+    }
+
+    return errors.New("no bson.ObjectId")
 }
 
 func Update{{$Name}}(selector interface{}, {{$name}} *{{$Name}}) error {
     s, c := GetSessionAndCollection(Collection{{$Model.Name}})
     defer s.Close()
 
-    {{$name}}.UpdatedAt = time.Now().UTC().Unix()
+    {{$name}}.UpdatedAt = time.Now().UTC()
 
     return c.Update(selector, bson.M{
         "$set": {{$name}},
@@ -137,24 +146,27 @@ func Update{{$Name}}All(selector interface{}, {{$name}} *{{$Name}}) (*mgo.Change
     s, c := GetSessionAndCollection(Collection{{$Model.Name}})
     defer s.Close()
 
-    {{$name}}.UpdatedAt = time.Now().UTC().Unix()
+    {{$name}}.UpdatedAt = time.Now().UTC()
 
     return c.UpdateAll(selector, bson.M{
         "$set": {{$name}},
     })
 }
 
-func Find{{$Name}}ByID(id string) (*{{$Name}}, error) {
+func Find{{$Name}}ByID(id interface{}) (*{{$Name}}, error) {
     s, c := GetSessionAndCollection(Collection{{$Model.Name}})
     defer s.Close()
 
     {{$name}} := new({{$Name}})
 
-    if bson.IsObjectIdHex(id) {
+    switch id := id.(type) {
+    case bson.ObjectId:
     	return {{$name}}, c.FindId(id).One({{$name}})
+    case string:
+    	return {{$name}}, c.FindId(bson.ObjectIdHex(id)).One({{$name}})
     }
 
-    return {{$name}}, c.FindId(bson.ObjectIdHex(id)).One({{$name}})
+    return nil, errors.New("no bson.ObjectId")
 }
 
 func Find{{$Name}}ByQuery(query interface{}) (*{{$Name}}, error) {
@@ -173,6 +185,23 @@ func FindAll{{$Name}}ByQuery(query interface{}) ([]*{{$Name}}, error) {
     {{$name}} := make([]*{{$Name}}, 0)
 
     return {{$name}}, c.Find(query).All(&{{$name}})
+}
+
+func Find{{$Name}}ByFormQuery(fields *storage.Query) ([]*{{$Name}}, error) {
+	s, c := GetSessionAndCollection(Collection{{$Model.Name}})
+	defer s.Close()
+
+	query := c.Find(fields.Search)
+
+	if len(fields.Sort) != 0 {
+		query.Sort(fields.Sort...)
+	}
+
+	 {{$name}} := make([]*{{$Name}}, 0)
+
+	return {{$name}}, query.Skip(fields.Skip + (fields.Page * fields.Limt)).
+		Limit(fields.Limt).
+		All(&{{$name}})
 }
 
 func Exist{{$Name}}ByID(id string) (bool, error) {
